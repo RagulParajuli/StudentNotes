@@ -41,37 +41,32 @@ class HomeActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.miAddContact -> {
-                // Handle Add Contact action
-                Toast.makeText(this, "Add Contact clicked", Toast.LENGTH_SHORT).show()
-                true
-            }
-            R.id.miShare -> {
-                // Handle Share action
-                Toast.makeText(this, "Share clicked", Toast.LENGTH_SHORT).show()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
+        when (item.itemId) {
+            R.id.miAddContact -> Toast.makeText(this, "No Contacts to add", Toast.LENGTH_SHORT).show()
+            R.id.miShare -> Toast.makeText(this, "No Contacts to share", Toast.LENGTH_SHORT).show()
         }
+        return true
     }
+
     fun Join(view: View) {
-        if (view.getId() == R.id.joinedImg || view.getId() == R.id.joinedTxt){
-            Toast.makeText(this,"See Joined Notes", Toast.LENGTH_SHORT).show()
+        if (view.getId() == R.id.joinedImg || view.getId() == R.id.joinedTxt) {
+            Toast.makeText(this, "See Joined Notes", Toast.LENGTH_SHORT).show()
         }
     }
+
     fun Create(view: View) {
-        if (view.getId() == R.id.createImg || view.getId() == R.id.createTxt){
-            Toast.makeText(this,"Create Notes", Toast.LENGTH_SHORT).show()
+        if (view.getId() == R.id.createImg || view.getId() == R.id.createTxt) {
+            Toast.makeText(this, "Create Notes", Toast.LENGTH_SHORT).show()
             val create = Intent(this, CreateActivity::class.java)
             startActivity(create)
         }
     }
+
     fun Profile(view: View) {
-        if (view.getId() == R.id.profileImg || view.getId() == R.id.profileTxt){
+        if (view.getId() == R.id.profileImg || view.getId() == R.id.profileTxt) {
             val profile = Intent(this, ProfileActivity::class.java)
             startActivity(profile)
-            Toast.makeText(this,"Opening Profile", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Opening Profile", Toast.LENGTH_SHORT).show()
         }
     }
 }
