@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -24,6 +26,7 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+
         joinedImg = findViewById(R.id.joinedImg)
         createImg = findViewById(R.id.createImg)
         profileImg = findViewById(R.id.profileImg)
@@ -32,6 +35,26 @@ class HomeActivity : AppCompatActivity() {
         profileTxt = findViewById(R.id.profileTxt)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.home_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.miAddContact -> {
+                // Handle Add Contact action
+                Toast.makeText(this, "Add Contact clicked", Toast.LENGTH_SHORT).show()
+                true
+            }
+            R.id.miShare -> {
+                // Handle Share action
+                Toast.makeText(this, "Share clicked", Toast.LENGTH_SHORT).show()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
     fun Join(view: View) {
         if (view.getId() == R.id.joinedImg || view.getId() == R.id.joinedTxt){
             Toast.makeText(this,"See Joined Notes", Toast.LENGTH_SHORT).show()

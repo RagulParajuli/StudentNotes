@@ -7,6 +7,20 @@
     android:background="#3F1D6F"
     tools:context=".HomeActivity">
 
+    <!-- Include the Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#B3925DDD"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/Theme.StudentNotes"
+        app:title=""
+        app:titleTextColor="@android:color/white"
+        tools:ignore="MissingConstraints" />
+
     <TextView
         android:id="@+id/taskBar"
         android:layout_width="0dp"
@@ -101,7 +115,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:text="NOTES"
         android:textColor="@color/white"
         android:textSize="28sp"
