@@ -4,11 +4,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
 
@@ -21,10 +18,14 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var createrTxt: TextView
     private lateinit var forgetTxt: TextView
 
+    // Firebase Authentication instance
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        // Initialize views
         doorImg = findViewById(R.id.doorImg)
         orImg = findViewById(R.id.orImg)
         emailTxt = findViewById(R.id.emailTxt)
@@ -33,31 +34,68 @@ class LoginActivity : AppCompatActivity() {
         sinBtn = findViewById(R.id.sinBtn)
         createrTxt = findViewById(R.id.createTxt)
         forgetTxt = findViewById(R.id.forgetTxt)
-    }
-    fun LogIn(view: View) {
-        val emailTxt = emailTxt.text.toString()
-        val passTxt = passTxt.text.toString()
-        if(view.getId() == R.id.logBtn){
-            if(emailTxt.isEmpty()){
-                Toast.makeText(this, "Fill Email", Toast.LENGTH_SHORT).show()
-            }
-            else if (passTxt.isEmpty()){
-                Toast.makeText(this, "Fill Password", Toast.LENGTH_SHORT).show()
-            }
-            else{
-                Toast.makeText(this, "Loging In", Toast.LENGTH_SHORT).show()
-                val log = Intent(this, HomeActivity::class.java)
-                startActivity(log)
-            }
-        }
-    }
-    fun SignIn(view: View) {
-        Toast.makeText(this, "Signing In", Toast.LENGTH_SHORT).show()
-        val sin = Intent(this, MainActivity::class.java)
-        startActivity(sin)
+
+        // Initialize Firebase Auth
+        auth = FirebaseAuth.getInstance()
+
+        // Set click listeners
+        logBtn.setOnClickListener { logIn() }
+        sinBtn.setOnClickListener { signUp() }
+        forgetTxt.setOnClickListener { forgetPassword() }
     }
 
-    fun Forget(view: View) {
-        Toast.makeText(this, "Try To Remember", Toast.LENGTH_SHORT).show()
+    private fun logIn() {
+        val email = emailTxt.text.toString().trim()
+        val password = passTxt.text.toString().trim()
+
+        if (email.isEmpty()) {
+            Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (password.isEmpty()) {
+            Toast.makeText(this, "Please enter password", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Log in using Firebase Auth
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Login successful
+                    Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, HomeActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    // Login failed
+                    Toast.makeText(this, "Login Failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+    }
+
+    private fun signUp() {
+        // Navigate to the registration screen
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun forgetPassword() {
+        val email = emailTxt.text.toString().trim()
+
+        if (email.isEmpty()) {
+            Toast.makeText(this, "Please enter your registered email", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Send a password reset email
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(this, "Password reset email sent", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                }
+            }
     }
 }

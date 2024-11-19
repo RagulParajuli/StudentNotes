@@ -9,6 +9,9 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import com.example.studentnotes.User.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,41 +45,74 @@ class MainActivity : AppCompatActivity() {
         passwordText = findViewById(R.id.passwordText)
         conformpasswordText = findViewById(R.id.conformpasswordText)
 
+        loginText.setOnClickListener {
+            val loginIntent = Intent(this, LoginActivity::class.java)
+            startActivity(loginIntent)
+        }
+// Register button click listener
+        registerButton.setOnClickListener {
+            toRegister()
+        }
     }
 
-    fun toRegister(view: View) {
+    // Registration logic moved here
+    private fun toRegister() {
         val nameText = nameText.text.toString()
         val emailText = emailText.text.toString()
         val passwordText = passwordText.text.toString()
         val conformpasswordText = conformpasswordText.text.toString()
-        if (view.getId() == R.id.registerButton){
-            if (nameText.isEmpty()){
-                Toast.makeText(this, "Fill Name", Toast.LENGTH_SHORT).show()
-            }
-            else if (emailText.isEmpty()){
-                Toast.makeText(this, "Fill Email", Toast.LENGTH_SHORT).show()
-            }
-            else if (passwordText.isEmpty() || conformpasswordText.isEmpty() ){
-                Toast.makeText(this, "Fill Password", Toast.LENGTH_SHORT).show()
-            }
-            else if(passwordText != conformpasswordText){
-                Toast.makeText(this, "Password not Match", Toast.LENGTH_SHORT).show()
-            }
-            else{
-                val home = Intent(this, HomeActivity::class.java)
-                startActivity(home)
-            }
+
+        if (nameText.isEmpty()) {
+            Toast.makeText(this, "Fill Name", Toast.LENGTH_SHORT).show()
+            return
         }
-        if (view.getId() == R.id.registerText){
-            Toast.makeText(this, "Opening Google", Toast.LENGTH_SHORT).show()
+        if (emailText.isEmpty()) {
+            Toast.makeText(this, "Fill Email", Toast.LENGTH_SHORT).show()
+            return
         }
-    }
-    fun toLogin(view: View) {
-            if (view.getId() == R.id.loginText){
-                val login = Intent(this, LoginActivity::class.java)
-                startActivity(login)
+        if (passwordText.isEmpty() || conformpasswordText.isEmpty()) {
+            Toast.makeText(this, "Fill Password", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (passwordText != conformpasswordText) {
+            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Firebase Authentication
+        val auth = FirebaseAuth.getInstance()
+        auth.createUserWithEmailAndPassword(emailText, passwordText)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val firebaseUser = task.result?.user
+                    firebaseUser?.let {
+                        // Save user data to Firestore
+                        val firestore = FirebaseFirestore.getInstance()
+                        val user = User(name = nameText, email = emailText, uid = it.uid)
+                        firestore.collection("users")
+                            .document(it.uid)
+                            .set(user)
+                            .addOnSuccessListener {
+                                Toast.makeText(
+                                    this,
+                                    "Registration Successful!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                // Redirect to Home Activity
+                                val home = Intent(this, HomeActivity::class.java)
+                                startActivity(home)
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Error: ${task.exception?.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
     }
 }
-
-
